@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tutor Login</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f2f5;
+      font-family: Arial, sans-serif;
+    }
+    .box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    input, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .link {
+      background: none;
+      color: #007bff;
+      border: none;
+      text-align: left;
+      padding: 0;
+      cursor: pointer;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h2 id="formTitle">Tutor Login</h2>
+
+    <input id="email" placeholder="Email" type="email" />
+    <input id="password" placeholder="Password" type="password" />
+    <input id="confirmPassword" placeholder="Confirm Password" type="password" style="display:none;" />
+
+    <button id="mainBtn" onclick="handleMainAction()">Login</button>
+
+    <button class="link" onclick="toggleForm('register')">New? Register here</button>
+    <button class="link" onclick="toggleForm('login')">Already have account? Login</button>
+    <button class="link" onclick="toggleForm('change')">Change Password</button>
+  </div>
+
+  <script>
+    let mode = "login"; // default mode
+
+    function toggleForm(newMode) {
+      mode = newMode;
+      const title = document.getElementById("formTitle");
+      const confirmPwd = document.getElementById("confirmPassword");
+      const mainBtn = document.getElementById("mainBtn");
+
+      if (mode === "register") {
+        title.innerText = "Register New Tutor";
+        confirmPwd.style.display = "block";
+        mainBtn.innerText = "Register";
+      } else if (mode === "login") {
+        title.innerText = "Tutor Login";
+        confirmPwd.style.display = "none";
+        mainBtn.innerText = "Login";
+      } else if (mode === "change") {
+        title.innerText = "Change Password";
+        confirmPwd.style.display = "block";
+        mainBtn.innerText = "Change Password";
+      }
+    }
+
+    function handleMainAction() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+      const users = JSON.parse(localStorage.getItem("tutors")) || {};
+
+      if (!email || !password || (mode !== "login" && !confirmPassword)) {
+        alert("Please fill all fields.");
+        return;
+      }
+
+      if (mode === "register") {
+        if (users[email]) {
+          alert("Account already exists.");
+        } else if (password !== confirmPassword) {
+          alert("Passwords do not match.");
+        } else {
+          users[email] = { password };
+          localStorage.setItem("tutors", JSON.stringify(users));
+          alert("Account registered successfully!");
+          toggleForm("login");
+        }
+      }
+
+      else if (mode === "login") {
+        if (!users[email]) {
+          alert("Account not found.");
+        } else if (users[email].password !== password) {
+          alert("Incorrect password.");
+        } else {
+          localStorage.setItem("tutorId", email); // Save tutor email to localStorage
+          alert("Login successful!");
+          console.log("Redirecting to tutor-dashboard.html...");
+          window.location.href = "./tutor-dashboard.html"; // Redirect to correct page
+        }
+      }
+
+      else if (mode === "change") {
+        if (!users[email]) {
+          alert("Account not found.");
+        } else if (password === confirmPassword) {
+          alert("New password must be different from old password.");
+        } else {
+          users[email].password = confirmPassword;
+          localStorage.setItem("tutors", JSON.stringify(users));
+          alert("Password changed successfully.");
+          toggleForm("login");
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>

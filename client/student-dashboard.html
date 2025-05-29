@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Student Dashboard</title>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+  <style>
+    :root {
+      --bg-color: #f0f2f5;
+      --text-color: #000;
+      --section-bg: #fff;
+      --section-shadow: rgba(0, 0, 0, 0.1);
+      --input-bg: #fff;
+      --input-border: #ccc;
+      --button-bg: #007bff;
+      --button-hover-bg: #0056b3;
+      --chat-bg: #f9f9f9;
+      --chat-message-bg: #e0f7fa;
+      --ai-response-bg: #fff3e0;
+      --table-header-bg: #f1f1f1;
+    }
+
+    body.dark-mode {
+      --bg-color: #121212;
+      --text-color: #ddd;
+      --section-bg: #1e1e1e;
+      --section-shadow: rgba(255, 255, 255, 0.1);
+      --input-bg: #2a2a2a;
+      --input-border: #555;
+      --button-bg: #bb86fc;
+      --button-hover-bg: #9a67ea;
+      --chat-bg: #2a2a2a;
+      --chat-message-bg: #37474f;
+      --ai-response-bg: #5d4037;
+      --table-header-bg: #333;
+    }
+
+    body {
+      background: var(--bg-color);
+      color: var(--text-color);
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 20px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    h1 {
+      text-align: center;
+    }
+    .section {
+      background: var(--section-bg);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--section-shadow);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    textarea,
+    input[type="text"],
+    input[type="time"],
+    input[type="date"],
+    select,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid var(--input-border);
+      background-color: var(--input-bg);
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    button {
+      background-color: var(--button-bg);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: var(--button-hover-bg);
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    .completed {
+      text-decoration: line-through;
+      color: gray;
+    }
+    .delete-btn {
+      margin-left: 10px;
+      color: red;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .delete-btn:hover {
+      text-decoration: underline;
+    }
+    .chat-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-history {
+      background: var(--chat-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+    .chat-message {
+      background: var(--chat-message-bg);
+      padding: 8px;
+      border-radius: 5px;
+      margin-bottom: 5px;
+      transition: background-color 0.3s ease;
+    }
+    .ai-response {
+      background: var(--ai-response-bg);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    table,
+    th,
+    td {
+      border: 1px solid var(--input-border);
+      transition: border-color 0.3s ease;
+    }
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+      color: var(--text-color);
+    }
+    th {
+      background-color: var(--table-header-bg);
+      transition: background-color 0.3s ease;
+    }
+
+    /* Dark mode toggle button */
+    #modeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--text-color);
+      transition: color 0.3s ease;
+      z-index: 1000;
+    }
+    #modeToggle:focus {
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <button id="modeToggle" title="Toggle Light/Dark Mode">🌞</button>
+
+  <h1 class="animate__animated animate__fadeIn">🎓 Student Dashboard</h1>
+
+  <div class="section animate__animated animate__fadeInUp">
+    <h2>📚 Enrolled Courses</h2>
+    <ul id="coursesList">
+      <li>
+        <p><strong>🔬 Physics Basics - Class 10</strong></p>
+        <p>👨‍🏫 Dr. Ramesh Verma | ⏱️ 1h 15m</p>
+        <p>📄 Understand motion, force, and energy with real-life examples.</p>
+        <p>▶️ <a href="https://www.youtube.com/watch?v=ABC123XYZ" target="_blank">Watch Video</a></p>
+      </li>
+      <li>
+        <p><strong>📘 English Grammar Essentials</strong></p>
+        <p>👩‍🏫 Ms. Priya Nair | ⏱️ 45m</p>
+        <p>📄 Master parts of speech and sentence formation.</p>
+        <p>▶️ <a href="https://www.youtube.com/watch?v=DEF456LMN" target="_blank">Watch Video</a></p>
+      </li>
+      <li>
+        <p><strong>🧮 Vedic Maths Tricks</strong></p>
+        <p>👨‍🏫 Mr. Arjun Singh | ⏱️ 50m</p>
+        <p>📄 Speed up your math solving techniques with easy tricks.</p>
+        <p>▶️ <a href="https://www.youtube.com/watch?v=GHI789OPQ" target="_blank">Watch Video</a></p>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section animate__animated animate__fadeInUp">
+    <h2>📝 Personal Notes</h2>
+    <textarea id="notesArea" rows="5" placeholder="Write your study notes here..."></textarea>
+    <button onclick="saveNotes()">💾 Save Notes</button>
+  </div>
+
+  <div class="section animate__animated animate__fadeInUp">
+    <h2>🗓️ Daily Study Planner</h2>
+    <input type="date" id="taskDate" />
+    <input type="text" id="taskInput" placeholder="New task..." />
+    <button onclick="addTask()">➕ Add Task</button>
+    <ul id="taskList"></ul>
+  </div>
+
+  <div class="section animate__animated animate__fadeInUp">
+    <h2>⏰ Set Study Reminder</h2>
+    <input type="time" id="alarmTime" />
+    <input type="text" id="alarmMsg" placeholder="Reminder message..." />
+    <button onclick="setAlarm()">🔔 Set Alarm</button>
+  </div>
+
+  <div class="section animate__animated animate__fadeInUp">
+    <h2>📜 Task History</h2>
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Reminder</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const email = localStorage.getItem("studentEmail") || "student@example.com"; // replace with real logic
+
+    const notesArea = document.getElementById("notesArea");
+    const coursesList = document.getElementById("coursesList");
+    const taskDate = document.getElementById("taskDate");
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+    const alarmTime = document.getElementById("alarmTime");
+    const alarmMsg = document.getElementById("alarmMsg");
+    const historyBody = document.getElementById("historyBody");
+
+    async function loadCourses() {
+      const res = await fetch("http://localhost:5000/api/student/get-courses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }), // student's email
+      });
+      const data = await res.json();
+      coursesList.innerHTML = "";
+      data.courses.forEach((c) => {
+        const li = document.createElement("li");
+        li.innerHTML = `📘 <strong>${c.title}</strong> <br>📝 <em>${c.notes}</em>`;
+        coursesList.appendChild(li);
+      });
+    }
+
+    async function saveNotes() {
+      await fetch("http://localhost:5000/api/student/save-notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, notes: notesArea.value }),
+      });
+      alert("Notes saved!");
+    }
+
+    async function loadNotes() {
+      const res = await fetch("http://localhost:5000/api/student/get-notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      notesArea.value = data.notes;
+    }
+
+    async function addTask() {
+      const date = taskDate.value;
+      const task = taskInput.value.trim();
+      if (!date || !task) return alert("Date and task are required.");
+
+      const history = JSON.parse(localStorage.getItem("taskHistory")) || [];
+      const taskData = { task, date, time: alarmTime.value, reminder: alarmMsg.value };
+      history.push(taskData);
+      localStorage.setItem("taskHistory", JSON.stringify(history));
+
+      taskInput.value = "";
+      loadHistory();
+    }
+
+    function loadHistory() {
+      const history = JSON.parse(localStorage.getItem("taskHistory")) || [];
+      historyBody.innerHTML = "";
+      history.forEach((entry) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${entry.task}</td>
+          <td>${entry.date}</td>
+          <td>${entry.time}</td>
+          <td>${entry.reminder}</td>
+        `;
+        historyBody.appendChild(tr);
+      });
+    }
+
+    function setAlarm() {
+      const timeInput = alarmTime.value;
+      const message = alarmMsg.value.trim();
+      if (!timeInput || !message) return alert("Please set time and message.");
+
+      const now = new Date();
+      const [hour, minute] = timeInput.split(":").map(Number);
+      const alarmTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hour, minute, 0);
+      const timeout = alarmTime.getTime() - now.getTime();
+
+      if (timeout < 0) return alert("Selected time has already passed today.");
+
+      setTimeout(() => {
+        alert("🔔 Reminder: " + message);
+      }, timeout);
+
+      alert("Alarm set successfully for " + timeInput);
+    }
+
+    // Dark/Light Mode Toggle Logic
+    const modeToggle = document.getElementById("modeToggle");
+
+    function setMode(isDark) {
+      if (isDark) {
+        document.body.classList.add("dark-mode");
+        modeToggle.textContent = "🌜"; // moon emoji
+        localStorage.setItem("mode", "dark");
+      } else {
+        document.body.classList.remove("dark-mode");
+        modeToggle.textContent = "🌞"; // sun emoji
+        localStorage.setItem("mode", "light");
+      }
+    }
+
+    modeToggle.addEventListener("click", () => {
+      const isDark = document.body.classList.contains("dark-mode");
+      setMode(!isDark);
+    });
+
+    // On page load, set mode from localStorage or default to light
+    window.onload = () => {
+      const savedMode = localStorage.getItem("mode") || "light";
+      setMode(savedMode === "dark");
+      loadCourses();
+      loadNotes();
+      loadHistory();
+    };
+
+    taskDate.addEventListener("change", loadHistory);
+  </script>
+</body>
+</html>

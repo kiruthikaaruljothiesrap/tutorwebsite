@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tutor Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+    header {
+      background-color: #004080;
+      color: white;
+      padding: 15px 20px;
+      text-align: center;
+      font-size: 24px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+    }
+    .container {
+      display: flex;
+      width: 100%;
+      margin-top: 60px;
+      height: calc(100vh - 60px);
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #00264d;
+      color: white;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .sidebar h2 {
+      margin-top: 0;
+      font-size: 20px;
+      border-bottom: 1px solid #444;
+      padding-bottom: 10px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    .sidebar ul li {
+      cursor: pointer;
+      padding: 10px 5px;
+      border-radius: 5px;
+      margin-bottom: 8px;
+      transition: background-color 0.3s;
+    }
+    .sidebar ul li:hover {
+      background-color: #004080;
+    }
+    .main {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background-color: #f7f9fc;
+    }
+    .section {
+      margin-bottom: 50px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+    }
+    h3 {
+      margin-top: 0;
+      color: #004080;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #004080;
+      color: white;
+    }
+    input, select, textarea {
+      padding: 8px;
+      margin: 8px 0 16px 0;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    button {
+      background-color: #004080;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #003366;
+    }
+    .receipt {
+      margin-top: 20px;
+      background: #e9f0ff;
+      padding: 15px;
+      border-radius: 5px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    /* Scrollable Course List (like YouTube style) */
+    #courseListSection table tbody {
+      display: block;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 100%;
+    }
+    #courseListSection table thead, #courseListSection table tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+    /* Chat section styles */
+    #messagesSection {
+      display: flex;
+      flex-direction: column;
+      height: 400px;
+    }
+    #chatWindow {
+      flex: 1;
+      border: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+      background: #fff;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    #chatInput {
+      display: flex;
+      gap: 10px;
+    }
+    #chatInput textarea {
+      flex: 1;
+      resize: none;
+      height: 50px;
+      padding: 10px;
+      font-size: 14px;
+    }
+    #chatInput button {
+      width: 100px;
+      align-self: flex-end;
+      height: 50px;
+    }
+    /* Manage Booking Table Edits */
+    #bookingTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    #bookingTable th, #bookingTable td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+      position: relative;
+    }
+    #bookingTable th {
+      background-color: #004080;
+      color: white;
+    }
+    .delete-btn {
+      cursor: pointer;
+      color: red;
+      font-weight: bold;
+      font-size: 16px;
+      user-select: none;
+    }
+    /* Trash bin icon for delete buttons */
+    .trash-icon::before {
+      content: "🗑️";
+    }
+    /* Calendar textarea styling */
+    #calendarSection textarea {
+      width: 100%;
+      resize: vertical;
+      min-height: 40px;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    /* History box */
+    #calendarHistory {
+      border: 1px solid #ccc;
+      background: #f0f0f0;
+      padding: 10px;
+      height: 120px;
+      overflow-y: auto;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    /* Student List expanded */
+    #studentsSection table tbody {
+      max-height: 200px;
+      overflow-y: auto;
+      display: block;
+    }
+    #studentsSection table thead, #studentsSection table tbody tr {
+      display: table;
+      width: 100%;
+      table-layout: fixed;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Tutor Dashboard
+  </header>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Menu</h2>
+      <ul>
+        <li onclick="scrollToSection('profileSection')">👤 Tutor Profile</li>
+        <li onclick="scrollToSection('uploadSection')">📥 Upload Course</li>
+        <li onclick="scrollToSection('courseListSection')">📚 Course List</li>
+        <li onclick="scrollToSection('studentPerformanceSection')">📈 Student Performance</li>
+        <li onclick="scrollToSection('messagesSection')">💬 Chat</li>
+        <li onclick="scrollToSection('feedbackSection')">⭐ Rating & Feedback</li>
+        <li onclick="scrollToSection('bookingSection')">📅 Manage Bookings</li>
+        <li onclick="scrollToSection('calendarSection')">🗓️ Calendar</li>
+        <li onclick="scrollToSection('notificationSection')">🔔 Notifications</li>
+        <li onclick="scrollToSection('earningsSection')">💰 Earnings</li>
+        <li onclick="scrollToSection('studentsSection')">👨‍🎓 Student List</li>
+        <li onclick="scrollToSection('paymentSection')">💳 Payment Method</li>
+      </ul>
+    </div>
+    <div class="main">
+      <div id="profileSection" class="section">
+        <h3>Tutor Profile</h3>
+        <p>Name: John Doe</p>
+        <p>Subject: Mathematics, Physics</p>
+        <p>Experience: 5 Years</p>
+      </div>
+      <div id="uploadCourseSection">
+  <h3>Upload Course</h3>
+ <form id="course-form">
+  <input type="text" id="course-title" placeholder="Course Title" required />
+  <input type="url" id="course-url" placeholder="YouTube URL" required />
+  <textarea id="course-desc" placeholder="Course Description" required></textarea>
+  <button type="submit">Upload Course</button>
+</form>
+</div>
+      <div id="courseListSection" class="section">
+        <h3>Course List</h3>
+        <table>
+          <thead>
+            <tr><th>Course Name</th><th>Subject</th><th>Price</th></tr>
+          </thead>
+          <tbody id="courseListBody">
+            <tr><td>Algebra Basics</td><td>Mathematics</td><td>$50</td></tr>
+            <tr><td>Physics Fundamentals</td><td>Physics</td><td>$70</td></tr>
+            <tr><td>Calculus Advanced</td><td>Mathematics</td><td>$80</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="studentPerformanceSection" class="section">
+        <h3>Student Performance</h3>
+        <p>Student scores and progress overview.</p>
+        <table>
+          <thead>
+            <tr><th>Student</th><th>Course</th><th>Score</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>Algebra Basics</td><td>85%</td><td>Passed</td></tr>
+            <tr><td>Bob</td><td>Physics Fundamentals</td><td>78%</td><td>Passed</td></tr>
+            <tr><td>Charlie</td><td>Calculus Advanced</td><td>92%</td><td>Passed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Updated Chat Section -->
+      <div id="messagesSection" class="section">
+        <h3>Chat</h3>
+        <p>Chat with your students and parents here.</p>
+        <div id="chatWindow"></div>
+        <div id="chatInput">
+          <textarea id="chatMessage" placeholder="Type your message..."></textarea>
+          <button onclick="sendMessage()">Send</button>
+        </div>
+      </div>
+      <div id="feedbackSection" class="section">
+        <h3>Ratings</h3>
+<table id="ratingsTable" border="1">
+  <thead>
+    <tr>
+      <th>Course Name 📚</th>
+      <th>Teaching Skill 👩‍🏫</th>
+      <th>Hands-on Experience 🤲</th>
+      <th>Reviews ⭐</th>
+      <th>Feedback 📝</th>
+    </tr>
+  </thead>
+  <tbody id="ratingsBody">
+    <tr>
+      <td>JavaScript Basics 💻</td>
+      <td>Excellent 👍</td>
+      <td>Strong 💪</td>
+      <td>4.8/5 ⭐⭐⭐⭐⭐</td>
+      <td>Very clear and engaging teaching. 😊</td>
+    </tr>
+    <tr>
+      <td>Python for Data Science 🐍</td>
+      <td>Good 🙂</td>
+      <td>Moderate 🤏</td>
+      <td>4.5/5 ⭐⭐⭐⭐✨</td>
+      <td>Helpful hands-on exercises. 🙌</td>
+    </tr>
+    <tr>
+      <td>React Development ⚛️</td>
+      <td>Very Good 👌</td>
+      <td>Strong 💪</td>
+      <td>4.7/5 ⭐⭐⭐⭐⭐</td>
+      <td>Well explained concepts with practical examples. 💡</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+      <!-- Manage Bookings with Add/Delete Row/Column -->
+      <div id="bookingSection" class="section">
+        <h3>Manage Bookings</h3>
+        <button onclick="addBookingRow()">➕</button>
+        <button onclick="addBookingColumn()">➕</button>
+        <table id="bookingTable">
+          <thead>
+            <tr id="bookingHeaderRow">
+              <th>Booking ID</th>
+              <th>Student Name</th>
+              <th>Course</th>
+              <th>Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookingBody">
+            <tr>
+              <td>1</td>
+              <td>Alice</td>
+              <td>Algebra Basics</td>
+              <td>2025-05-16</td>
+              <td><span class="delete-btn trash-icon" onclick="deleteBookingRow(this)"></span></td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Bob</td>
+              <td>Physics Fundamentals</td>
+              <td>2025-05-18</td>
+              <td><span class="delete-btn trash-icon" onclick="deleteBookingRow(this)"></span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Calendar Section with Text Areas and History -->
+      <div id="calendarSection" class="section">
+        <h3>Calendar</h3>
+        <input type="date" id="calendarDate" />
+<input type="time" id="calendarTime" />
+<button id="addEventBtn">Add Event</button>
+<ul id="eventList"></ul>
+        <label>Course Name:</label>
+        <textarea id="calCourseName" placeholder="Enter course name"></textarea>
+        <label>Student Name:</label>
+        <textarea id="calStudentName" placeholder="Enter student name"></textarea>
+        <label>Notes / Description:</label>
+        <textarea id="calNotes" placeholder="Additional notes..."></textarea>
+        <button onclick="addCalendarEntry()">Add Entry</button>
+        <h4>History</h4>
+        <div id="calendarHistory"></div>
+      </div>
+      <div id="notificationSection" class="section">
+  <h3>🔔 Notifications</h3>
+  <ul>
+    <li>📥 New student enrolled in <strong>Algebra Basics</strong>.</li>
+    <li>📅 Upcoming class for <strong>Physics Fundamentals</strong> on <strong>May 18, 2025</strong>.</li>
+    <li>💬 New message from parent of <strong>Alice</strong>.</li>
+    <li>🌟 You received a 5-star rating for <strong>Python for Beginners</strong>.</li>
+    <li>💰 ₹2000 payment received for <strong>Math Mastery</strong>.</li>
+  </ul>
+</div>
+     <section id="earnings" class="dashboard-section">
+  <h2>💰 Earnings</h2>
+  <table id="earnings-table" border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>📅 Date</th>
+        <th>📌 Source</th>
+        <th>💵 Amount</th>
+        <th>📝 Notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>2025-05-01</td>
+        <td>Course Payment</td>
+        <td>₹1500</td>
+        <td>Received from Algebra Basics 📘</td>
+      </tr>
+      <tr>
+        <td>2025-05-05</td>
+        <td>Tip from Parent</td>
+        <td>₹500</td>
+        <td>Excellent feedback on teaching 👏</td>
+      </tr>
+      <tr>
+        <td>2025-05-10</td>
+        <td>Course Payment</td>
+        <td>₹2000</td>
+        <td>Python for Beginners 🐍</td>
+      </tr>
+      <tr>
+        <td>2025-05-14</td>
+        <td>Referral Bonus</td>
+        <td>₹300</td>
+        <td>Referred by Tutor ID #T1234 🤝</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+      <!-- Expanded Student List -->
+      <div id="studentsSection" class="section">
+        <h3>Student List</h3>
+        <table>
+          <thead>
+            <tr><th>Name</th><th>Email</th><th>Enrolled Courses</th><th>Status</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>alice@mail.com</td><td>Algebra Basics</td><td>Active</td></tr>
+            <tr><td>Bob</td><td>bob@mail.com</td><td>Physics Fundamentals</td><td>Active</td></tr>
+            <tr><td>Charlie</td><td>charlie@mail.com</td><td>Calculus Advanced</td><td>Active</td></tr>
+            <tr><td>Diana</td><td>diana@mail.com</td><td>Algebra Basics, Calculus Advanced</td><td>Active</td></tr>
+            <tr><td>Edward</td><td>edward@mail.com</td><td>Physics Fundamentals</td><td>Inactive</td></tr>
+            <tr><td>Fiona</td><td>fiona@mail.com</td><td>Calculus Advanced</td><td>Active</td></tr>
+            <tr><td>George</td><td>george@mail.com</td><td>Algebra Basics</td><td>Active</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="paymentSection" class="section">
+        <h4>Tutor Bank Details</h4>
+  <p>Name: John Tutor</p>
+  <p>Bank: ABC Bank</p>
+  <p>Account Number: 1234567890</p>
+  <p>IFSC Code: ABCD0123456</p>
+  <p>UPI ID: johntutor@upi</p>
+  <img src="https://api.qrserver.com/v1/create-qr-code/?data=johntutor@upi&size=150x150" alt="UPI QR Code" />
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Scroll to section helper
+    function scrollToSection(id) {
+      document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ========== Chatbot logic (Basic simulation of ChatGPT) ==========
+    const chatWindow = document.getElementById('chatWindow');
+    const chatMessage = document.getElementById('chatMessage');
+
+    function sendMessage() {
+      const msg = chatMessage.value.trim();
+      if (!msg) return;
+      appendChatMessage('You', msg);
+      chatMessage.value = '';
+      simulateBotResponse(msg);
+    }
+
+    function appendChatMessage(sender, message) {
+      const p = document.createElement('p');
+      p.style.margin = '6px 0';
+      p.innerHTML = `<strong>${sender}:</strong> ${message}`;
+      chatWindow.appendChild(p);
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    function simulateBotResponse(userMsg) {
+      // Simple keyword-based responses for demo; replace with API for real ChatGPT
+      let response = "Sorry, I didn't understand that. Could you rephrase?";
+      const msg = userMsg.toLowerCase();
+
+      if (msg.includes('hello') || msg.includes('hi')) {
+        response = "Hello! How can I assist you today?";
+      } else if (msg.includes('course')) {
+        response = "I can help you with courses, uploading, and student info. What do you want to know?";
+      } else if (msg.includes('booking')) {
+        response = "To manage bookings, you can add or delete entries in the Manage Bookings section.";
+      } else if (msg.includes('calendar')) {
+        response = "Use the Calendar section to add course schedules and notes.";
+      } else if (msg.includes('student')) {
+        response = "The Student List shows all students and their enrolled courses.";
+      } else if (msg.includes('thanks') || msg.includes('thank you')) {
+        response = "You're welcome! Let me know if you need anything else.";
+      }
+
+      setTimeout(() => {
+        appendChatMessage('TutorBot', response);
+      }, 1000);
+    }
+
+    // ========== Manage Bookings add/delete row/column ==========
+    const bookingTable = document.getElementById('bookingTable');
+    const bookingBody = document.getElementById('bookingBody');
+    const bookingHeaderRow = document.getElementById('bookingHeaderRow');
+
+    function addBookingRow() {
+      const newRow = document.createElement('tr');
+      // Count current columns except last "Action"
+      const colCount = bookingHeaderRow.children.length - 1;
+      // Generate Booking ID automatically by last row + 1
+      let lastId = 0;
+      if (bookingBody.lastElementChild) {
+        lastId = parseInt(bookingBody.lastElementChild.children[0].textContent) || 0;
+      }
+      // First cell: booking id
+      newRow.innerHTML = `<td>${lastId + 1}</td>`;
+
+      // Add empty editable cells for other columns except last (action)
+      for (let i = 1; i < colCount; i++) {
+        newRow.innerHTML += `<td contenteditable="true"></td>`;
+      }
+      // Last cell with delete icon
+      newRow.innerHTML += `<td><span class="delete-btn trash-icon" onclick="deleteBookingRow(this)"></span></td>`;
+
+      bookingBody.appendChild(newRow);
+    }
+
+    function deleteBookingRow(el) {
+      if (confirm("Delete this booking row?")) {
+        el.closest('tr').remove();
+      }
+    }
+
+    function addBookingColumn() {
+      // Add th to header before last column (Action)
+      const newTh = document.createElement('th');
+      const colNum = bookingHeaderRow.children.length; // before adding new
+      newTh.textContent = 'New Col ' + colNum;
+      // Insert before Action column
+      bookingHeaderRow.insertBefore(newTh, bookingHeaderRow.lastElementChild);
+
+      // Add td to each row before last td
+      for (const row of bookingBody.rows) {
+        const newTd = document.createElement('td');
+        newTd.contentEditable = "true";
+        // Insert before last column (Action)
+        row.insertBefore(newTd, row.lastElementChild);
+      }
+    }
+
+    // ========== Calendar Section: add entry and show history ==========
+    const calendarHistory = document.getElementById('calendarHistory');
+    const calendarEntries = [];
+
+    function addCalendarEntry() {
+      const course = document.getElementById('calCourseName').value.trim();
+      const student = document.getElementById('calStudentName').value.trim();
+      const notes = document.getElementById('calNotes').value.trim();
+      if (!course || !student) {
+        alert("Please enter course and student name.");
+        return;
+      }
+      const dateTime = new Date().toLocaleString();
+      const entry = `Date: ${dateTime}\nCourse: ${course}\nStudent: ${student}\nNotes: ${notes}\n---\n`;
+      calendarEntries.push(entry);
+      calendarHistory.textContent = calendarEntries.join('');
+      // Clear inputs
+      document.getElementById('calCourseName').value = '';
+      document.getElementById('calStudentName').value = '';
+      document.getElementById('calNotes').value = '';
+    }
+
+  </script>
+</body>
+</html>
+
+
+

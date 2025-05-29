@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Parent Courses & Payment History</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      padding: 20px;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .search-section,
+    .payment-history,
+    .courses-list,
+    .enrollment-courses {
+      margin: 20px auto;
+      max-width: 1000px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 1s ease-in;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .filters select,
+    .filters input {
+      padding: 8px;
+      margin-right: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+    }
+
+    .course {
+      border: 1px solid #ddd;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 8px;
+      background: #f2f8ff;
+      transition: transform 0.3s, background-color 0.5s ease;
+    }
+
+    .course:hover {
+      transform: scale(1.02);
+      background-color: #e8f4fc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    th,
+    td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    th {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .emoji {
+      font-size: 1.2em;
+      margin-right: 5px;
+    }
+
+    .enrollment-details {
+      margin-top: 10px;
+      background: #f9f9f9;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      transition: background-color 0.5s ease, color 0.5s ease;
+    }
+
+    .adjustable-section input {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 100%;
+      transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+    }
+
+    .button-enroll {
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-enroll:hover {
+      background-color: #45a049;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background-color: transparent;
+      color: #007bff;
+      font-size: 24px;
+      border: none;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .back-button:hover {
+      color: #0056b3;
+    }
+
+    .enrollment-courses-table {
+      margin-top: 30px;
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .search-section,
+    body.dark-mode .payment-history,
+    body.dark-mode .courses-list,
+    body.dark-mode .enrollment-courses {
+      background-color: #1e1e1e;
+      color: #e0e0e0;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+    }
+
+    body.dark-mode .filters select,
+    body.dark-mode .filters input {
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    body.dark-mode .course {
+      background-color: #222;
+      border-color: #444;
+    }
+
+    body.dark-mode .course:hover {
+      background-color: #333;
+    }
+
+    body.dark-mode table,
+    body.dark-mode th,
+    body.dark-mode td {
+      background-color: #222;
+      color: #e0e0e0;
+      border-color: #444;
+    }
+
+    body.dark-mode th {
+      background-color: #388e3c;
+      color: #fff;
+    }
+
+    body.dark-mode .enrollment-details {
+      background-color: #222;
+      border-color: #444;
+      color: #e0e0e0;
+    }
+
+    body.dark-mode .adjustable-section input {
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    body.dark-mode .button-enroll {
+      background-color: #388e3c;
+    }
+
+    body.dark-mode .button-enroll:hover {
+      background-color: #2e7d32;
+    }
+
+    body.dark-mode .back-button {
+      color: #90caf9;
+    }
+
+    body.dark-mode .back-button:hover {
+      color: #64b5f6;
+    }
+
+    /* Dark/Light toggle button */
+    #themeToggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      transition: color 0.3s ease;
+      user-select: none;
+      outline: none;
+    }
+
+    #themeToggle:hover {
+      color: #4caf50;
+    }
+  </style>
+</head>
+<body>
+  <!-- Dark/Light Mode Toggle Button -->
+  <button id="themeToggle" aria-label="Toggle dark/light mode" title="Toggle dark/light mode">🌞</button>
+
+  <h2>🎓 Explore 100+ Online Courses</h2>
+
+  <div class="search-section">
+    <h3>🔍 Filter Courses</h3>
+    <div class="filters">
+      <select id="classFilter">
+        <option value="">📚 All Classes</option>
+        <script>
+          for (let i = 1; i <= 12; i++) {
+            document.write(`<option value="${i}">${i} Std</option>`);
+          }
+        </script>
+      </select>
+
+      <select id="subjectFilter">
+        <option value="">📖 All Subjects</option>
+        <option value="English">🇬🇧 English</option>
+        <option value="Math">🧮 Math</option>
+        <option value="Science">🔬 Science</option>
+        <option value="Hindi">🇮🇳 Hindi</option>
+        <option value="French">🇫🇷 French</option>
+        <option value="Computer">💻 Computer</option>
+      </select>
+
+      <button onclick="filterCourses()">Apply Filter</button>
+    </div>
+  </div>
+
+  <div class="courses-list" id="coursesList">
+    <!-- Courses will be injected here -->
+  </div>
+
+  <div class="enrollment-courses">
+    <h3>💼 Preview Enrollment Courses</h3>
+    <table id="enrollmentTable">
+      <thead>
+        <tr>
+          <th>📘 Course Name</th>
+          <th>👨‍🏫 Tutor</th>
+          <th>💰 Amount</th>
+          <th>📝 Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Enrollment details will be populated here -->
+      </tbody>
+    </table>
+  </div>
+
+  <div class="payment-history">
+    <h3>💳 Payment History</h3>
+    <table>
+      <tr>
+        <th>📅 Date</th>
+        <th>⏰ Time</th>
+        <th>📘 Course Name</th>
+        <th>👨‍🏫 Tutor</th>
+        <th>💰 Amount</th>
+        <th>⌛ Duration</th>
+      </tr>
+      <tr>
+        <td>2025-05-10</td>
+        <td>10:30 AM</td>
+        <td>🧮 Math Mastery</td>
+        <td>Mr. Aryan</td>
+        <td>₹499</td>
+        <td>30 Days</td>
+      </tr>
+      <tr>
+        <td>2025-05-11</td>
+        <td>4:00 PM</td>
+        <td>🇬🇧 Spoken English</td>
+        <td>Ms. Neha</td>
+        <td>₹699</td>
+        <td>45 Days</td>
+      </tr>
+    </table>
+  </div>
+
+  <script>
+    // Initial data setup
+    const courses = Array.from({ length: 100 }, (_, i) => ({
+      title: `Course #${i + 1}`,
+      subject: ['English', 'Math', 'Science', 'Hindi', 'French', 'Computer'][i % 6],
+      class: (i % 12) + 1,
+      description: `🔥 This is a great course for class ${(i % 12) + 1} students on ${
+        ['English', 'Math', 'Science', 'Hindi', 'French', 'Computer'][i % 6]
+      }.`,
+      tutor: ['Priya M', 'Srika K', 'Rathika S', 'Esra P', 'Bharath M', 'Raj M'][i % 6],
+      amount: 499 + (i % 10) * 100,
+    }));
+
+    function displayCourses(filtered = courses) {
+      const container = document.getElementById('coursesList');
+      container.innerHTML = '';
+      filtered.forEach((c) => {
+        container.innerHTML += `
+          <div class="course">
+            <h4>📘 ${c.title}</h4>
+            <p>${c.description}</p>
+            <p>👨‍🏫 Subject: ${c.subject} | 🏫 Class: ${c.class}</p>
+            <button onclick="showCourseDetails('${c.title}', '${c.description}', '${c.tutor}', ${c.amount})">Enroll Now</button>
+          </div>
+        `;
+      });
+    }
+
+    function filterCourses() {
+      const subject = document.getElementById('subjectFilter').value;
+      const classVal = document.getElementById('classFilter').value;
+
+      const filtered = courses.filter(
+        (c) => (!subject || c.subject === subject) && (!classVal || c.class == classVal)
+      );
+
+      displayCourses(filtered);
+    }
+
+    function showCourseDetails(title, description, tutor, amount) {
+      const container = document.getElementById('coursesList');
+      container.innerHTML = `
+        <div class="course">
+          <button class="back-button" onclick="goBack()">←</button> 
+          <h4>📘 ${title}</h4>
+          <div class="enrollment-details">
+            <p><strong>📝 Description:</strong> ${description}</p>
+            <p><strong>👨‍🏫 Tutor:</strong> ${tutor}</p>
+            <p><strong>💰 Amount:</strong> ₹${amount}</p>
+            <div class="adjustable-section">
+              <label for="amountInput">Adjust Amount:</label>
+              <input type="number" id="amountInput" value="${amount}" onchange="updateAmount(this.value)">
+            </div>
+            <button class="button-enroll" onclick="confirmEnrollment('${title}', '${tutor}', document.getElementById('amountInput').value, '${description}')">Confirm Enrollment</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function updateAmount(amount) {
+      console.log('Updated Amount: ₹' + amount); // Optional: can handle amount update if needed
+    }
+
+    function confirmEnrollment(title, tutor, amount, description) {
+      const enrollmentDetails = { title, tutor, amount, description };
+      const enrollments = JSON.parse(localStorage.getItem('enrollments')) || [];
+      enrollments.push(enrollmentDetails);
+      localStorage.setItem('enrollments', JSON.stringify(enrollments));
+      displayEnrollmentTable();
+      alert(`You have enrolled in "${title}" successfully!`);
+      // Go back to course list after enrollment
+      displayCourses();
+    }
+
+    function displayEnrollmentTable() {
+      const enrollmentTable = document.getElementById('enrollmentTable').getElementsByTagName('tbody')[0];
+      const enrollments = JSON.parse(localStorage.getItem('enrollments')) || [];
+      enrollmentTable.innerHTML = '';
+      enrollments.forEach((e, i) => {
+        enrollmentTable.innerHTML += `
+          <tr>
+            <td>${e.title}</td>
+            <td>${e.tutor}</td>
+            <td>₹${e.amount}</td>
+            <td><button onclick="viewDescription('${e.title}')">View Description</button></td>
+          </tr>
+        `;
+      });
+    }
+
+    function viewDescription(title) {
+      const enrollments = JSON.parse(localStorage.getItem('enrollments')) || [];
+      const enrollment = enrollments.find((e) => e.title === title);
+      if (enrollment) {
+        alert(`Course Description: ${enrollment.description}`);
+      }
+    }
+
+    function goBack() {
+      displayCourses();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Dark mode toggle logic
+    const themeToggle = document.getElementById('themeToggle');
+    const currentTheme = localStorage.getItem('theme') || 'light';
+
+    if (currentTheme === 'dark') {
+      document.body.classList.add('dark-mode');
+      themeToggle.textContent = '🌙'; // Moon icon for dark mode
+    } else {
+      themeToggle.textContent = '🌞'; // Sun icon for light mode
+    }
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      if (document.body.classList.contains('dark-mode')) {
+        themeToggle.textContent = '🌙';
+        localStorage.setItem('theme', 'dark');
+      } else {
+        themeToggle.textContent = '🌞';
+        localStorage.setItem('theme', 'light');
+      }
+    });
+
+    // Initial render
+    displayCourses();
+    displayEnrollmentTable();
+  </script>
+</body>
+</html>
